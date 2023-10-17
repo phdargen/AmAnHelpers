@@ -118,18 +118,57 @@ def delta_S2(s):
     return delta2_S2(1.42**2)   
     #return delta4(s) 
 
+## u bar u S-wave, Omega_11 from https://inspirehep.net/files/598602a1c5ab52eb5bc93cc3e6a0785f
+import pandas as pd
+from scipy.interpolate import interp1d
+import cmath
+
+data = pd.read_csv('wpd_datasets.csv')
+print(data.head())
+
+omega_11_im_m = data['Im_m'].values
+omega_11_im = data['Im_val'].values
+omega_11_re_m = data['Re_m'].values
+omega_11_re = data['Re_val'].values
+print(omega_11_im_m)
+
+interpolatorRe = interp1d(omega_11_re_m, omega_11_re, kind='linear', fill_value="extrapolate")
+interpolatorIm = interp1d(omega_11_im_m, omega_11_im, kind='linear', fill_value="extrapolate")
+
+def omega_11(m):
+    re = interpolatorRe(m)
+    im = interpolatorIm(m)
+    return complex(re,im)
+
+## Plot Omega 11 input
+m_values = np.linspace(0, 2.6, 500)
+omega11_re_values = [omega_11(m).real for m in m_values]
+omega11_im_values = [omega_11(m).imag for m in m_values]
+
+plt.figure(figsize=(10, 5))
+plt.plot(m_values, omega11_re_values, label='Re $\Omega_{11}$', color='blue')
+plt.plot(m_values, omega11_im_values, label='Im $\Omega_{11}$', color='red')
+plt.xlabel('$m$ [GeV]')
+plt.ylabel('$\Omega_{11}$')
+plt.grid(True)
+plt.legend()
+plt.ylim(-1, 2)  
+plt.savefig('omnes_pipiSwave_omega11.png', dpi=300, bbox_inches='tight')
+plt.show()
+
 # Plot delta(s)
 m_values = np.linspace(2.001*m_pi, 2, 100)
-#m_values = np.linspace(2.5*m_pi, 2, 100)
 delta0_values = [delta(m**2) for m in m_values]
 delta0_S2_values = [delta_S2(m**2) for m in m_values]
+delta0_omega11_values = [cmath.phase(omega_11(m))*180/np.pi for m in m_values]
 
 plt.figure(figsize=(10, 5))
 plt.subplot(1, 2, 1)
-plt.plot(m_values, delta0_values, label='delta S0', color='red')
-plt.plot(m_values, delta0_S2_values, label='delta S2', color='blue')
-plt.xlabel('m')
-plt.ylabel('delta(m)')
+plt.plot(m_values, delta0_values, label='$\delta_{S0}$', color='red')
+plt.plot(m_values, delta0_S2_values, label='$\delta_{S2}$', color='blue')
+plt.plot(m_values, delta0_omega11_values, label='$\delta_{\Omega_{11}}$', color='green')
+plt.xlabel('$m$ [GeV]')
+plt.ylabel('Phase')
 plt.grid(True)
 plt.legend()
 #plt.show()
@@ -166,21 +205,26 @@ def A_pipiS2(s):
 # Plot A_pipiS
 A_pipiS_values = [A_pipiS(m**2) for m in m_values]
 A_pipiS2_values = [A_pipiS2(m**2) for m in m_values]
+A_pipiS_Omega11_values = [abs(omega_11(m)) for m in m_values]
 
 norm_A_pipiS = np.trapz(A_pipiS_values, m_values)
 norm_A_pipiS2 = np.trapz(A_pipiS2_values, m_values)
 #A_pipiS_values = A_pipiS_values /  norm_A_pipiS
 #A_pipiS2_values = A_pipiS2_values /norm_A_pipiS2
+
 A_pipiS_values = np.array(A_pipiS_values)
 A_pipiS2_values = np.array(A_pipiS2_values)
+A_pipiS_Omega11_values = np.array(A_pipiS_Omega11_values)
 A_pipiS_values = A_pipiS_values /  max(A_pipiS_values)
 A_pipiS2_values = A_pipiS2_values / max(A_pipiS2_values) * 0.5
+A_pipiS_Omega11_values = A_pipiS_Omega11_values / max(A_pipiS_Omega11_values)
 
 plt.subplot(1, 2, 2)
-plt.plot(m_values, A_pipiS_values, label='A_pipiS0', color='red')
-plt.plot(m_values, A_pipiS2_values, label='A_pipiS2', color='blue')
-plt.xlabel('m')
-plt.ylabel('A_pipiS(m)')
+plt.plot(m_values, A_pipiS_values, label='$A_{S0}$', color='red')
+plt.plot(m_values, A_pipiS2_values, label='$A_{S2}$', color='blue')
+plt.plot(m_values, A_pipiS_Omega11_values, label='$|\Omega_{11}|$', color='green')
+plt.xlabel('m [GeV]')
+plt.ylabel('Magnitude')
 plt.grid(True)
 plt.legend()
 #ymax = 1.2 * max(A_pipiS_values)
