@@ -238,8 +238,17 @@ plt.savefig('omnes_pipiSwave.png', dpi=300, bbox_inches='tight')
 heads = ["PiPi00","PiPi20","PiPi30","PiPi40","PiPi50"]
 nBins = 100
 min = 0
-max = 3.0
+max = 4.0
 step   = ( max - min ) / (nBins-1.)
+
+## For cross check
+r_values = []
+theta_values = []
+r2_values = []
+theta2_values = []
+r3_values = []
+theta3_values = []
+m_values = []
 
 with open('omnes.txt', 'w') as file:
     for head in heads:
@@ -254,6 +263,11 @@ with open('omnes.txt', 'w') as file:
             output += f"{head}::Spline::Omnes11::Im::{c:<20}  2   {val.imag:<14} 0 \n"
             file.write(output)
 
+            if head == "PiPi00":
+                r3_values.append(abs(val))
+                theta3_values.append(cmath.phase(val)*180/np.pi)
+                m_values.append(math.sqrt(s))
+
         file.write("\n")
         for c in range(0,nBins):
             s = min + c * step
@@ -264,15 +278,54 @@ with open('omnes.txt', 'w') as file:
             output = f"{head}::Spline::OmnesS0::Re::{c:<20}  2   {val.real:<14} 0 \n"
             output += f"{head}::Spline::OmnesS0::Im::{c:<20}  2   {val.imag:<14} 0 \n"
             file.write(output)
+            
+            if head == "PiPi00":
+                r_values.append(abs(val))
+                theta_values.append(cmath.phase(val)*180/np.pi)
 
         file.write("\n")
         for c in range(0,nBins):
             s = min + c * step
             r = A_pipiS2( s if s > (2.001*m_pi)**2 else (2.001*m_pi)**2  ) / norm_A_pipiS2
-            theta = delta(s) * np.pi/180.
+            theta = 0 if s < (2.001*m_pi)**2 else delta_S2(s) * np.pi/180.
             val  = r * (cmath.cos(theta) + 1j * cmath.sin(theta))
             output = f"{head}::Spline::OmnesS2::Re::{c:<20}  2   {val.real:<14} 0 \n"
             output += f"{head}::Spline::OmnesS2::Im::{c:<20}  2   {val.imag:<14} 0 \n"
             file.write(output)
 
+            if head == "PiPi00":
+                r2_values.append(abs(val))
+                theta2_values.append(cmath.phase(val)*180/np.pi)
+
         file.write("\n")
+
+## Control plots
+r_values = np.array(r_values)
+r2_values = np.array(r2_values)
+r3_values = np.array(r3_values)
+
+theta_values = np.array(theta_values)
+theta2_values = np.array(theta2_values)
+theta3_values = np.array(theta3_values)
+
+m_values = np.array(m_values)
+
+plt.figure(figsize=(10, 5))
+plt.subplot(1, 2, 1)
+plt.plot(m_values, theta_values, label='$\delta_{S0}$', color='red')
+plt.plot(m_values, theta2_values, label='$\delta_{S2}$', color='blue')
+plt.plot(m_values, theta3_values, label='$\delta_{\Omega_{11}}$', color='green')
+plt.xlabel('$m$ [GeV]')
+plt.ylabel('theta')
+plt.grid(True)
+plt.legend()
+
+plt.subplot(1, 2, 2)
+plt.plot(m_values, r_values, label='$A_{S0}$', color='red')
+plt.plot(m_values, r2_values, label='$A_{S2}$', color='blue')
+plt.plot(m_values, r3_values, label='$|\Omega_{11}|$', color='green')
+plt.xlabel('$m$ [GeV]')
+plt.ylabel('r')
+plt.grid(True)
+plt.legend()
+plt.show()
