@@ -130,7 +130,7 @@ omega_11_im_m = data['Im_m'].values
 omega_11_im = data['Im_val'].values
 omega_11_re_m = data['Re_m'].values
 omega_11_re = data['Re_val'].values
-print(omega_11_im_m)
+#print(omega_11_im_m)
 
 interpolatorRe = interp1d(omega_11_re_m, omega_11_re, kind='linear', fill_value="extrapolate")
 interpolatorIm = interp1d(omega_11_im_m, omega_11_im, kind='linear', fill_value="extrapolate")
@@ -142,6 +142,7 @@ def omega_11(m):
 
 ## Plot Omega 11 input
 m_values = np.linspace(0, 2.6, 500)
+#m_values = np.linspace(0, math.sqrt(3), 100)
 omega11_re_values = [omega_11(m).real for m in m_values]
 omega11_im_values = [omega_11(m).imag for m in m_values]
 
@@ -154,7 +155,7 @@ plt.grid(True)
 plt.legend()
 plt.ylim(-1, 2)  
 plt.savefig('omnes_pipiSwave_omega11.png', dpi=300, bbox_inches='tight')
-plt.show()
+# plt.show()
 
 # Plot delta(s)
 m_values = np.linspace(2.001*m_pi, 2, 100)
@@ -230,4 +231,48 @@ plt.legend()
 #ymax = 1.2 * max(A_pipiS_values)
 #plt.ylim(0, ymax)  
 plt.savefig('omnes_pipiSwave.png', dpi=300, bbox_inches='tight')
-plt.show()
+#plt.show()
+
+
+## Save values in text file as input for AmpGen
+heads = ["PiPi00","PiPi20","PiPi30","PiPi40","PiPi50"]
+nBins = 100
+min = 0
+max = 3.0
+step   = ( max - min ) / (nBins-1.)
+
+with open('omnes.txt', 'w') as file:
+    for head in heads:
+        output = f"{head}::Spline  {nBins} {min} {max} \n"
+        file.write(output)
+        
+        for c in range(0,nBins):
+            s = min + c * step
+            
+            val  = omega_11(math.sqrt(s))
+            output = f"{head}::Spline::Omnes11::Re::{c:<20}  2   {val.real:<14} 0 \n"
+            output += f"{head}::Spline::Omnes11::Im::{c:<20}  2   {val.imag:<14} 0 \n"
+            file.write(output)
+
+        file.write("\n")
+        for c in range(0,nBins):
+            s = min + c * step
+
+            r = A_pipiS(s) / norm_A_pipiS
+            theta = delta(s) * np.pi/180.
+            val  = r * (cmath.cos(theta) + 1j * cmath.sin(theta))
+            output = f"{head}::Spline::OmnesS0::Re::{c:<20}  2   {val.real:<14} 0 \n"
+            output += f"{head}::Spline::OmnesS0::Im::{c:<20}  2   {val.imag:<14} 0 \n"
+            file.write(output)
+
+        file.write("\n")
+        for c in range(0,nBins):
+            s = min + c * step
+            r = A_pipiS2( s if s > (2.001*m_pi)**2 else (2.001*m_pi)**2  ) / norm_A_pipiS2
+            theta = delta(s) * np.pi/180.
+            val  = r * (cmath.cos(theta) + 1j * cmath.sin(theta))
+            output = f"{head}::Spline::OmnesS2::Re::{c:<20}  2   {val.real:<14} 0 \n"
+            output += f"{head}::Spline::OmnesS2::Im::{c:<20}  2   {val.imag:<14} 0 \n"
+            file.write(output)
+
+        file.write("\n")
