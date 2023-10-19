@@ -169,22 +169,3 @@ resonancesZs = [Resonance("Z_{s}(4000)", 4003, 1, "+", "red")]
 
 # latex_table = generate_latex_table(particlesPsi, particlesOther, resonances=[])
 # print("\n" + latex_table + "\n")
-
-
-ffs = [0.383, 0.0157 ,0.232, 0.0045 ] # Belle fit 1
-#ffs = [0.430, 0.0184 ,0.168, 0.00758]  # Belle fit 2
-total = sum(ffs)
-normalized_ffs = [x/total * 100 for x in ffs]
-print(normalized_ffs)
-
-bfs = [ffs[0], ffs[1] / 0.93 * 3./4., ffs[2] * 3./4., ffs[3] / 0.0153 * 1./3. ]
-total = sum(bfs)
-normalized_bfs = [x/total * 100 for x in bfs]
-print(normalized_bfs)
-
-
-ffs = [0.5707, 0.0889 ,0.136 + 0.0589, 0.00758]  # Amp fit
-bfs = [ffs[0], ffs[1] * 3./4., ffs[2] * 3./4., 0.11, 0.03]
-total = sum(bfs)
-normalized_bfs = [x/total * 100 for x in bfs]
-print(normalized_bfs)

@@ -238,7 +238,7 @@ plt.savefig('omnes_pipiSwave.png', dpi=300, bbox_inches='tight')
 heads = ["PiPi00","PiPi20","PiPi30","PiPi40","PiPi50"]
 nBins = 100
 min = 0
-max = 4.0
+max = 3.0
 step   = ( max - min ) / (nBins-1.)
 
 ## For cross check
