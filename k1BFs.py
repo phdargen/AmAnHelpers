@@ -186,6 +186,11 @@ R_0_p = integral_omega/integral_rhoOmega * 100
 print(f"R^all_omega= {R_all_p}")
 print(f"R^0_omega= {R_0_p}")
 
+print("\n")
+print(f"R^0_omega= {R_0} pm {np.abs(R_0_p-R_0_m)/2}")
+print(f"R^0_rho= {100-R_0} pm {np.abs(R_0_p-R_0_m)/2}")
+print("\n")
+
 ## Plot integrand to check valid integration range
 s_values = np.linspace(s123_min, s123_max, 1000)
 integrand_RhoOmega_s12_s123_values = [integrand_RhoOmega_s12_s123(s, m_rho, gamma_rho, m_omega, gamma_omega, delta, phi)**2 for s in s_values]
@@ -201,6 +206,8 @@ plt.show()
 ## Check isospin factors with results from https://arxiv.org/pdf/1009.5256v2.pdf
 ffs = [0.383, 0.0157 ,0.232, 0.0045 ] # Belle fit 1
 #ffs = [0.430, 0.0184 ,0.168, 0.00758]  # Belle fit 2
+#ffs = [, 0.0184 ,0.168, 0.00758]  # Belle fit 3
+
 total = sum(ffs)
 normalized_ffs = [x/total * 100 for x in ffs]
 print("Belle Fi: K rho, K pipi_S, K* pi, K omega")
@@ -216,8 +223,28 @@ print("Belle BFs: K rho, K pipi_S, K* pi, K omega")
 print(normalized_bfs)
 
 # Amp fit
-ffs = [57.07, 8.89, 13.70+5.89, R_0 ]  
-ffs_err = [2.44,1.29, sqrt(1.57**2 + 0.72**2), np.abs(R_0_p-R_0_m)/2] 
+# f_rho = 57.07
+# f_rho_err = 2.44
+# f_Ks_S = 13.70
+# f_Ks_S_err = 1.57
+# f_Ks_D = 5.89
+# f_Ks_D_err = 0.72
+# f_Kpi = 8.89
+# f_Kpi_err = 1.29
+
+f_rho = 0.5516803 *100
+f_rho_err = 0.0091285881 *100
+f_Ks_S = 0.17489425 *100
+f_Ks_S_err = 0.01225596 *100
+f_Ks_D = 0.066988013 *100
+f_Ks_D_err = 0.0064358485 *100
+f_Kpi = 0.08634484 *100
+f_Kpi_err = 0.001427722 *100
+
+Sum_Ks_S_D = 97.44/100
+
+ffs = [ (1-R_0/100) * f_rho, f_Kpi, (f_Ks_S+f_Ks_D)/Sum_Ks_S_D, R_0 ]  
+ffs_err = [ sqrt( ((1-R_0/100)* f_rho_err)**2 + (np.abs(R_0_p-R_0_m)/2/100 *ffs[0])**2 ), f_Kpi_err, sqrt(f_Ks_S_err**2 + f_Ks_D_err**2)/Sum_Ks_S_D, np.abs(R_0_p-R_0_m)/2] 
 
 bfs = [ffs[0], ffs[1] * 3./4., ffs[2] * 3./4., ffs[3] / BF_omega2pipi * 1./3.]
 total = sum(bfs)
