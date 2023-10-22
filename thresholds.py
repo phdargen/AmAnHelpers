@@ -110,25 +110,45 @@ particlesDs = [Particle("D_{s}^\pm", 1968.35, 0, "-"),
                ]
 
 particlesPsi = [
-    Particle("\eta_c(1S)", 2983.9, 1, "-"),
+    Particle("\eta_c(1S)", 2983.9, 0, "-"),
     Particle("J/\psi(1S)", 3096.9, 1, "-"),
-    Particle("\chi_{c0}(1P)", 3414.8, 1, "-"),
-    Particle("\chi_{c1}(1P)", 3510.7, 1, "-"),
-    Particle("\chi_{c2}(1P)", 3556.2, 1, "-"),
-    Particle("\eta_c(2S)", 3639.0, 1, "-"),
+    Particle("\chi_{c0}(1P)", 3414.8, 0, "+"),
+    Particle("\chi_{c1}(1P)", 3510.7, 1, "+"),
+    Particle("h_{c}(1P)", 3525.37, 1, "+"),
+    Particle("\chi_{c2}(1P)", 3556.2, 2, "+"),
+    Particle("\eta_c(2S)", 3639.0, 0, "-"),
     Particle("\psi(2S)", 3686.0, 1, "-"),
     Particle("\psi(3770)", 3770.0, 1, "-"),
+    Particle("\psi_2(3823)", 3823, 2, "-"),
+    Particle("\psi_3(3842)", 3842, 3, "-"),
+    Particle("\chi_{c1}(3872)", 3871.65, 1, "+"),
+    Particle("\chi_{c0}(3915)", 3921.7, 0, "+"),
+    Particle("\chi_{c2}(3930)", 3922.5, 2, "+"),
     Particle("\psi(4040)", 4040.0, 1, "-"),
+    Particle("\chi_{c1}(4140)", 4146.5, 1, "+"),
     Particle("\psi(4160)", 4160.0, 1, "-"),
-    Particle("\psi(4415)", 4415.0, 1, "-")
+    Particle("\chi_{c1}(4274)", 4186, 1, "+"),
+    Particle("\psi(4230)", 4222.5, 1, "-"),
+    Particle("\psi(4360)", 4374, 1, "-"),
+    Particle("\psi(4415)", 4415.0, 1, "-"),
+    Particle("\psi(4660)", 4630, 1, "-"),
 ]
 
-particlesOther = [
-    Particle("K^+", 493.7, 0, "-"),  
+particlesOtherNeutral = [
+    Particle("\\eta", 547.86, 0, "-"),  
+    Particle("\\rho(770)^0", 775.5, 1, "-"),  
+    Particle("\\omega", 782.66, 1, "-"),  
     Particle("K^*(892)^0", 895.5, 1, "-"),  
-    Particle("\\pi^+", 139.6, 0, "-"),  
-    Particle("\\rho(770)^0", 775.5, 1, "-")  
+    Particle("\\eta^\prime", 957.78, 0, "-"),  
+    Particle("f_0(980)", 990, 0, "+"),
+    Particle("\\phi", 1019.46, 1, "-"),  
 ]
+
+particlesOtherCharged = [
+    Particle("\\pi^+", 139.6, 0, "-"),  
+    Particle("K^+", 493.7, 0, "-"),  
+]
+
 
 # From amp fit
 resonancesX = [Resonance("\psi(4360)", 4372, 1, "-", "red"), Resonance("X(S)", 4482, 0, "+", "blue"), Resonance("X(A)", 4688, 1, "+", "green"), Resonance("X^2(S)", 4673, 0, "+", "orange"), Resonance("X(V)", 4778, 1, "-", "cyan")]
@@ -167,5 +187,12 @@ resonancesZs = [Resonance("Z_{s}(4000)", 4003, 1, "+", "red")]
 # resonance_strs = ["\\textcolor{" + resonance.color + "}{$" + resonance.name + "$ (" + str(resonance.mass) + " MeV)}" for resonance in resonancesZ]
 # print("Thresholds with the appropriate $J^P$ and within {} MeV of {} are highlighted.".format(MASS_DIFF, ', '.join(resonance_strs)))
 
-# latex_table = generate_latex_table(particlesPsi, particlesOther, resonances=[])
-# print("\n" + latex_table + "\n")
+latex_table = generate_latex_table(particlesPsi, particlesOtherNeutral, resonances=resonancesX+resonancesXs)
+print("\n" + latex_table + "\n")
+resonance_strs = ["\\textcolor{" + resonance.color + "}{$" + resonance.name + "$ (" + str(resonance.mass) + " MeV)}" for resonance in resonancesX+resonancesXs]
+print("Thresholds with the appropriate $J^P$ and within {} MeV of {} are highlighted.".format(MASS_DIFF, ', '.join(resonance_strs)))
+
+latex_table = generate_latex_table(particlesPsi, particlesOtherCharged, resonances=resonancesZ+resonancesZs)
+print("\n" + latex_table + "\n")
+resonance_strs = ["\\textcolor{" + resonance.color + "}{$" + resonance.name + "$ (" + str(resonance.mass) + " MeV)}" for resonance in resonancesZ+resonancesZs]
+print("Thresholds with the appropriate $J^P$ and within {} MeV of {} are highlighted.".format(MASS_DIFF, ', '.join(resonance_strs)))
