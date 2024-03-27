@@ -19,14 +19,36 @@ m_rho = 0.77526
 gamma_rho = 0.1474  
 m_omega = 0.78266 
 gamma_omega = 0.00868  
+
+radius = 1.2
+
+reso = "K1"
 m_K1 = 1.279
 g_K1 = 0.116
-radius = 1.5
+if(reso == "K1p"):
+  m_K1 = 1.403
+  g_K1 = 0.174
+if(reso == "K"):
+  m_K1 = 1.4824
+  g_K1 = 0.3356
+if(reso == "K2*"):
+  m_K1 = 1.4273
+  g_K1 = 0.100
+if(reso == "K*"):
+  m_K1 = 1.414
+  g_K1 = 0.232
+if(reso == "K*p"):
+  m_K1 = 1.718
+  g_K1 = 0.322
 
 # Rho/Omega parameters from amp fit
-delta = 0.0041 # 0.00157
-sigma_delta = 0.0005
-phi = 0.0      #12.6
+delta = 0.0036
+sigma_delta = 0.0009
+phi = 0.0 
+if(reso != "K1"):
+  delta = 0.0038 
+  sigma_delta = 0.0013
+
 
 # Implements Rho/Omega mixing from https://arxiv.org/pdf/hep-ex/0112031.pdf
 def safe_sqrt(x):
@@ -198,7 +220,7 @@ plt.figure(figsize=(10,6))
 plt.plot(np.sqrt(s_values), integrand_RhoOmega_s12_s123_values)
 plt.xlabel("$\sqrt{s}$ (GeV)")
 plt.grid(True)
-plt.show()
+#plt.show()
 
 
 ## Calculate BFs
@@ -222,7 +244,7 @@ normalized_bfs = [x/total * 100 for x in bfs]
 print("Belle BFs: K rho, K pipi_S, K* pi, K omega")
 print(normalized_bfs)
 
-# Amp fit
+#Amp fit v1
 # f_rho = 57.07
 # f_rho_err = 2.44
 # f_Ks_S = 13.70
@@ -231,20 +253,92 @@ print(normalized_bfs)
 # f_Ks_D_err = 0.72
 # f_Kpi = 8.89
 # f_Kpi_err = 1.29
+#Sum_Ks_S_D = 97.44/100
 
-f_rho = 0.5516803 *100
-f_rho_err = 0.0091285881 *100
-f_Ks_S = 0.17489425 *100
-f_Ks_S_err = 0.01225596 *100
-f_Ks_D = 0.066988013 *100
-f_Ks_D_err = 0.0064358485 *100
-f_Kpi = 0.08634484 *100
-f_Kpi_err = 0.001427722 *100
+# f_rho = 0.5516803 *100
+# f_rho_err = 0.0091285881 *100
+# f_Ks_S = 0.17489425 *100
+# f_Ks_S_err = 0.01225596 *100
+# f_Ks_D = 0.066988013 *100
+# f_Ks_D_err = 0.0064358485 *100
+# f_Kpi = 0.08634484 *100
+# f_Kpi_err = 0.001427722 *100
+#Sum_Ks_S_D = 97.44/100
 
-Sum_Ks_S_D = 97.44/100
+#Amp fit v2
+# K1(1270)
+f_rho = 50.71
+f_rho_err = sqrt(2.18**2 + 3.19**2)
+f_Ks_S = 19.86
+f_Ks_S_err = sqrt(1.44**2 + 2.05**2)
+f_Ks_D = 8.32
+f_Ks_D_err = sqrt(0.85**2 + 1.54**2)
+f_Kpi = 11.35
+f_Kpi_err = sqrt(1.45**2 + 2.11**2)
+Sum_Ks_S_D = 98.64/100
 
-ffs = [ (1-R_0/100) * f_rho, f_Kpi, (f_Ks_S+f_Ks_D)/Sum_Ks_S_D, R_0 ]  
-ffs_err = [ sqrt( ((1-R_0/100)* f_rho_err)**2 + (np.abs(R_0_p-R_0_m)/2/100 *ffs[0])**2 ), f_Kpi_err, sqrt(f_Ks_S_err**2 + f_Ks_D_err**2)/Sum_Ks_S_D, np.abs(R_0_p-R_0_m)/2] 
+# K1(1400)
+if(reso == "K1p"):
+  f_rho = 22.08
+  f_rho_err = sqrt(4.4**2 + 6.25**2)
+  f_Ks_S = 86.8
+  f_Ks_S_err = sqrt(3.78**2 + 5.34**2)
+  f_Ks_D = 0
+  f_Ks_D_err = 0
+  f_Kpi = 0
+  f_Kpi_err = 0
+  Sum_Ks_S_D = 1
+
+# K(1460)
+if(reso == "K"):
+  f_rho = 0
+  f_rho_err = 0
+  f_Ks_S = 35.41
+  f_Ks_S_err = sqrt(4.08**2 + 9.72**2)
+  f_Ks_D = 0
+  f_Ks_D_err = 0
+  f_Kpi = 45.13
+  f_Kpi_err = sqrt(4.22**2 + 10.91**2)
+  Sum_Ks_S_D = 1
+
+# K2*(1430)
+if(reso == "K2*"):
+  f_rho = 12.71
+  f_rho_err = sqrt(2.3**2 + 1.8**2)
+  f_Ks_S = 76.7
+  f_Ks_S_err = sqrt(3.04**2 + 2.43**2)
+  f_Ks_D = 0
+  f_Ks_D_err = 0
+  f_Kpi = 0
+  f_Kpi_err = 0
+  Sum_Ks_S_D = 1
+
+# K*(1410)
+if(reso == "K*"):
+  f_rho = 38.36
+  f_rho_err = sqrt(10.46**2 + 19.07**2)
+  f_Ks_S = 88.5
+  f_Ks_S_err = sqrt(8.39**2 + 12.65**2)
+  f_Ks_D = 0
+  f_Ks_D_err = 0
+  f_Kpi = 0
+  f_Kpi_err = 0
+  Sum_Ks_S_D = 1
+
+# K*(1680)
+if(reso == "K*p"):
+  f_rho = 31.16
+  f_rho_err = sqrt(6.11**2 + 11.27**2)
+  f_Ks_S = 49.69
+  f_Ks_S_err = sqrt(6.72**2 + 13.32**2)
+  f_Ks_D = 0
+  f_Ks_D_err = 0
+  f_Kpi = 0
+  f_Kpi_err = 0
+  Sum_Ks_S_D = 1
+
+ffs = [ (1-R_0/100) * f_rho, f_Kpi, (f_Ks_S+f_Ks_D)/Sum_Ks_S_D, R_0/100 * f_rho ]  
+ffs_err = [ sqrt( ((1-R_0/100)* f_rho_err)**2 + (np.abs(R_0_p-R_0_m)/2/100 *ffs[0])**2 ), f_Kpi_err, sqrt(f_Ks_S_err**2 + f_Ks_D_err**2)/Sum_Ks_S_D, sqrt( (np.abs(R_0_p-R_0_m)/2/100 * f_rho)**2 + (R_0/100 *f_rho_err)**2 ) ] 
 
 bfs = [ffs[0], ffs[1] * 3./4., ffs[2] * 3./4., ffs[3] / BF_omega2pipi * 1./3.]
 total = sum(bfs)

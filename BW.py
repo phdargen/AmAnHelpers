@@ -40,8 +40,7 @@ def width(s, s1, s2, m, g, r, L, useEffMass=True):
 
   rt = g * BF * m * np.sqrt( q2r / s ) * q2r**L 
 
-  rt += g * 0.1
-
+  #rt += 0.1 * np.sqrt(s)/m
   #rt = g * np.sqrt(s)/m
 
   return rt
@@ -116,6 +115,17 @@ plt.figure(figsize=(10,6))
 plt.plot(m_Zs_values, width_values, label="BW")
 plt.plot(m_Zs_values, width_values2, label="BW2", linestyle="--")
 plt.xlabel("$m_Zs$ (GeV)")
+plt.ylabel("Width")
+plt.legend()
+plt.grid(True)
+#plt.show()
+
+width_values = width(s_values, m1**2, m2**2, m_Zs, g_Zs, r, L)
+width_values2 = width(s_values, m1**2, m2**2, m_Zs, g_Zs, r, L, False)
+plt.figure(figsize=(10,6))
+plt.plot(s_values, width_values, label="BW")
+plt.plot(s_values, width_values2, label="BW2", linestyle="--")
+plt.xlabel("$s_values$ (GeV)")
 plt.ylabel("Width")
 plt.legend()
 plt.grid(True)
